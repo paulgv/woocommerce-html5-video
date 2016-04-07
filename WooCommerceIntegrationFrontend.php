@@ -117,30 +117,7 @@ class WooCommerceIntegrationFrontend {
               $width = $width_config;
               $height = $height_config;
             }
-            else {
-              if (empty($video->width)) {
-                if (!empty($width_config) && $width_config != 0) {
-                  $width = $width_config;
-                }
-                else {//REVIEW
-                  $width = self::VIDEO_WIDTH;
-                }
-              }
-              else {
-                $width = $video->width;
-              }
-              if (empty($video->height)) {
-                if (!empty($height_config) && $height_config != 0) {
-                  $height = $height_config;
-                }
-                else {
-                  $height = '';
-                }
-              }
-              else {
-                $height = $video->height;
-              }
-            }
+            $responsive = (empty($video->width) && empty($video->height));
             switch ($video->type) {
               case 'Embedded':
                 if ($disable_iframe == 0)
@@ -149,7 +126,11 @@ class WooCommerceIntegrationFrontend {
 
               case 'oEmbed':
                 global $wp_embed;
+                if ($responsive)
+                  echo '<div class="embed-container">';
                 echo $wp_embed->run_shortcode('[embed width="' . $width . '" height="' . $height . '"]' . $video->url . '[/embed]');
+                if ($responsive)
+                  echo '</div>';
                 break;
 
               case 'WP Library':
@@ -176,10 +157,25 @@ class WooCommerceIntegrationFrontend {
       endif;
     endif;
     ?>
-    <p style="font-size:10px;color:#999;">
-      <?= __("Video embedding powered by","html5_video") ?>
-      <a target="_blank" title="Web + mobile development" rel="nofollow" href="http://www.webilop.com/products/woocommerce-html5-video/">Webilop</a>
-    </p>
+    <style type="text/css">
+    /* Responsive iFrame */
+    .embed-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+    }
+    .embed-container iframe,
+    .embed-container object,
+    .embed-container embed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    </style>
     <?php
   }
 
