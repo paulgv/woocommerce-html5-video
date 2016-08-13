@@ -86,7 +86,11 @@ class WooCommerceIntegrationFrontend {
    */
   public static function video_product_tabs_panel() {
     global $product;
-    $tinymce_content = htmlspecialchars_decode(get_post_meta($product->id, 'wo_di_editormce_video', true));
+    $id = $product->id;
+    if (function_exists('icl_object_id')) {
+      $id = icl_object_id($product->id, 'product', true, 'fr');
+    }
+    $tinymce_content = htmlspecialchars_decode(get_post_meta($id, 'wo_di_editormce_video', true));
     $disable_desc = get_option('wo_di_config_video_description');
 
     if ($disable_desc == 0) {
@@ -96,7 +100,7 @@ class WooCommerceIntegrationFrontend {
     }
 
     if (self::product_has_video_tabs($product)):
-      $videos = json_decode(get_post_meta($product->id, 'wo_di_video_product_videos', true));
+      $videos = json_decode(get_post_meta($id, 'wo_di_video_product_videos', true));
       if (!is_null($videos)):
         $width_config = get_option('wo_di_config_video_width');
         $height_config = get_option('wo_di_config_video_height');
@@ -188,9 +192,13 @@ class WooCommerceIntegrationFrontend {
    * also saves a message for use in method video_product_tabs_panel.
    */
   private static function product_has_video_tabs($product) {
-    $number_videos = get_post_meta($product->id, 'wo_di_number_of_videos', true);
+    $id = $product->id;
+    if (function_exists('icl_object_id')) {
+      $id = icl_object_id($product->id, 'product', true, 'fr');
+    }
+    $number_videos = get_post_meta($id, 'wo_di_number_of_videos', true);
     if ($number_videos > 0) {
-      $videos = json_decode(get_post_meta($product->id, 'wo_di_video_product_videos', true));
+      $videos = json_decode(get_post_meta($id, 'wo_di_video_product_videos', true));
       foreach ($videos as $video) {
         if ($video->active == 1) {
           return true;
